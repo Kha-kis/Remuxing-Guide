@@ -250,9 +250,9 @@ Before proceeding to fix the crop, it's important to first verify if there is an
      ```
 
 4. **Inject the Updated RPU into the Merged File**:  
-   Since the **Base Layer (BL)** and **Enhanced Layer (EL)** were already **merged** into one file (i.e., `merged_dovi.hevc`), which extracted the **RPU** from it, you do **not need to mux the layers again**. Instead, you can directly inject the modified **RPU** into the merged file.
+   Since the **Base Layer (BL)** and **Enhanced Layer (EL)** were already **merged** into one file (i.e., `merged_dovi.hevc`), which extracted the RPU from it, you do not need to mux the layers again. Instead, you can directly inject the modified RPU into the merged file.
 
-   Use the following command to inject the modified **RPU** into the **merged** file:
+   Use the following command to inject the modified RPU into the merged file:
 
    ```
    dovi_tool inject-rpu -i merged_dovi.hevc --rpu-in RPU_fixed.bin -o merged_with_RPU.hevc
