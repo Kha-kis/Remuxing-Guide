@@ -1,16 +1,5 @@
 # How to Demux a UHD Blu-ray Disk
 
-## Why DGDemux?
-
-DGDemux is optimized for UHD Blu-rays, especially those containing Dolby Vision. Compared to other tools, it offers:
-
-- Accurate extraction of Base Layer (BL) and Enhancement Layer (EL).
-- Seamless integration with dovi_tool for handling Dolby Vision metadata.
-- Proper processing of seamless branching playlists.
-- Superior error detection for flawed discs.
-
----
-
 ## Setting Up DGDemux
 
 ### Installation
