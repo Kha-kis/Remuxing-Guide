@@ -173,7 +173,7 @@ The **active area** is defined by the following offsets:
 - `active_area_top_offset`
 - `active_area_bottom_offset`
 
-These offsets indicate the area of the video that will be actively displayed. When using `dovi_tool info -i RPU.bin -f 1`, you can see the **Level 5 (L5)** data, including these offsets for a single frame, like this:
+These offsets indicate the area of the video that will be actively displayed. When using `dovi_tool info -i RPU.bin -f 1`,  where -f is the frame number. You can see the **Level 5 (L5)** data, including these offsets for a single frame, like this:
 
 ```json
 {
