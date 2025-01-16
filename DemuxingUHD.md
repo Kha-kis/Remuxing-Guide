@@ -1,11 +1,5 @@
 # How to Demux a UHD Blu-ray Disk
 
-## Overview
-
-Demuxing a UHD Blu-ray disc extracts individual streams (video, audio, subtitles, chapters, etc.) from the disc structure. Given the complexity of UHD Blu-rays and their frequent use of HEVC (H.265) video, specialized tools are essential. While eac3to is a robust tool for standard Blu-rays, DGDemux is better suited for UHD Blu-rays due to its precise handling of Dolby Vision metadata and seamless branching.
-
----
-
 ## Why DGDemux?
 
 DGDemux is optimized for UHD Blu-rays, especially those containing Dolby Vision. Compared to other tools, it offers:
@@ -29,8 +23,7 @@ DGDemux is optimized for UHD Blu-rays, especially those containing Dolby Vision.
 
    - Download dovi_tool from its [GitHub repository](https://github.com/quietvoid/dovi_tool).
    - Extract and ensure the executable is in your system path.
-   - Copy the updated dovi_tool executable into the DGDemux directory to replace the included version, ensuring compatibility with the latest features and fixes.
-
+   - Copy the updated dovi_tool executable into the DGDemux directory to replace the included version.
 ### Adding to System Path
 
 - Add the DGDemux directory to your system path to make it accessible from any command prompt location.
@@ -46,12 +39,12 @@ Before demuxing specific streams, use the `-d` option to analyze the full disc s
 
 1. **Command to analyze the disc structure**:
    ```
-   DGDemux -d "<FullPathToDecryptedDisc>"
+   dgdemux -d "<FullPathToDecryptedDisc>"
    ```
 
    Example:
    ```
-   DGDemux -d "D:\discs\MovieTitle"
+   dgdemux -d "D:\discs\MovieTitle"
    ```
 
    This command will display the list of playlists available on the disc, along with the associated chapter information for each.
@@ -73,32 +66,28 @@ Once you have the playlist identified, you can now use the `-i` option to specif
 
 1. **Basic Command**: To demux all streams (audio, video, subtitles, chapters) from the selected playlist:
    ```
-   DGDemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>"
+   dgdemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>"
    ```
 
    Example:
    ```
-   DGDemux -i "D:\discs\MovieTitle\BDMV\PLAYLIST\00001.mpls" -o "D:\output\MovieTitle"
+   dgdemux -i "D:\discs\MovieTitle\BDMV\PLAYLIST\00001.mpls" -o "D:\output\MovieTitle"
    ```
 
 2. **Demux Specific Streams**: If you want to extract only the video and audio tracks, use the `-demux` option to specify the PIDs:
    ```
-   DGDemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>" -demux <PID1>,<PID2>
+   dgdemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>" -demux <PID1>,<PID2>
    ```
 
    Example (for audio PID 4352 and video PID 4113):
    ```
-   DGDemux -i "D:\discs\MovieTitle\BDMV\PLAYLIST\00001.mpls" -o "D:\output\MovieTitle" -demux 4113,4352
+   dgdemux -i "D:\discs\MovieTitle\BDMV\PLAYLIST\00001.mpls" -o "D:\output\MovieTitle" -demux 4113,4352
    ```
 
 3. **For Dolby Vision UHD Blu-rays**: Use the `-mergedv` or `-mergedv81` options to create merged streams with Dolby Vision metadata:
    - **Base + Enhancement Layer Merge**:
      ```
      DGDemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>" -mergedv
-     ```
-   - **Profile 8 Dolby Vision Merge** (if converting RPU to Profile 8):
-     ```
-     DGDemux -i "<FullPathToDecryptedDisc>\PLAYLIST\<PlaylistNumber>.mpls" -o "<OutputFolderPath>\<OutputFilePrefix>" -mergedv81
      ```
 
 ---
@@ -268,8 +257,3 @@ Before proceeding to fix the crop, it's important to first verify if there is an
    ```
    dovi_tool info -i merged_with_RPU.hevc
    ```
----
-
-## Conclusion
-
-DGDemux is the go-to tool for demuxing UHD Blu-ray discs, offering unmatched accuracy and reliability for Dolby Vision content and seamless branching. By following this guide, you can confidently extract high-quality streams ready for further processing or remuxing. For advanced Dolby Vision handling, integrate **dovi_tool** into your workflow to ensure flawless metadata management.
