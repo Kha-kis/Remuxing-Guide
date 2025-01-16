@@ -139,6 +139,8 @@ The `merged_dovi.hevc` is created by DGDemux when selecting the `-mergedv` optio
 ```
 diff RPU_EL.bin RPU_MERGED.bin
 ```
+**Note** If you do not have diff avilable you can install git for windows
+Once installed add `C:\Program Files\Git\usr\bin\` to your `PATH`, as it already ships with a diff executable and installs it in that folder.
 
 If the RPU files match, the disc is mastered correctly, and the RPU can be injected into the Base Layer (BL) during the remuxing process.
 
