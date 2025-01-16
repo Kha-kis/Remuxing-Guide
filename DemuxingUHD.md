@@ -157,47 +157,117 @@ With MEL, converting the RPU from the EL to Profile 8 can resolve some issues ca
 DGDemux -i "<FullPathToDecryptedDisc>\PLAYLIST<PlaylistNumber>.mpls" -o "<OutputFolderPath><OutputFilePrefix>" -mergedv81
 ```
 
-### Check and Fix the Crop/Active Area
+### Verifying and Fixing the Crop/Active Area
 
-After creating the RPU, it’s important to verify the crop and active area of the video to ensure that no part of the image is inadvertently cut off or improperly displayed.
+Before proceeding to fix the crop, it's important to first verify if there is an issue with the crop and active area of the video. If discrepancies are found, you can then make the necessary adjustments to ensure the video displays correctly without cutting off parts of the image or introducing black bars.
 
-1. **Check the crop**: Ensure that the video crop is consistent with the original Blu-ray and hasn’t been accidentally altered.
-2. **Fix the active area**: If necessary, adjust the active area to match the intended playback region.
+1. **Verify the Crop**:
+   - Use the following command to inspect the active area offsets in the RPU:
 
-#### Active Area Verification
+   ```
+   dovi_tool info -i RPU.bin -f 1
+   ```
 
-The **active area** is defined by the following offsets:
+   Look at the active area offsets, which include:
+   - `active_area_left_offset`
+   - `active_area_right_offset`
+   - `active_area_top_offset`
+   - `active_area_bottom_offset`
 
-- `active_area_left_offset`
-- `active_area_right_offset`
-- `active_area_top_offset`
-- `active_area_bottom_offset`
+   These values define the portion of the video that will be displayed. If the crop is incorrect, you might notice parts of the image being cut off or unwanted black bars appearing.
 
-These offsets indicate the area of the video that will be actively displayed. When using `dovi_tool info -i RPU.bin -f 1`,  where -f is the frame number. You can see the **Level 5 (L5)** data, including these offsets for a single frame, like this:
+2. **Check Consistency Across Multiple Frames/Scenes**:
+   In general, the crop should remain consistent across all frames. However, it’s important to note that the crop can **change per frame or scene**, especially in content with **dynamic cropping** (e.g., IMAX scenes or content with different aspect ratios).
 
-```json
-{
-  "Level5": {
-    "active_area_left_offset": 0,
-    "active_area_right_offset": 0,
-    "active_area_top_offset": 276,
-    "active_area_bottom_offset": 276
-  }
-}
-```
+   - **For typical content**: The crop should remain the same throughout the video.
+   - **For content with variable aspect ratios (e.g., IMAX)**: The crop may change between scenes. In this case, you should check:
+     - A **normal scene** (standard aspect ratio).
+     - An **IMAX scene** (or any other scene with a different aspect ratio), as the crop may adjust to fit the wider image.
 
-### Is the active area the same across all frames?
+3. **Fix the Crop** (if needed):
+   If you identify issues with the crop (e.g., black bars or improper framing), use the **dovi_tool editor** to modify the active area offsets. Here’s how to fix the crop:
 
-In most cases, the active area remains the same across all frames of the video, especially if the content doesn't have dynamic framing or anamorphic scaling. However, to ensure this:
+   - **Download Example Configs**:  
+     Pre-existing examples for editing the active area are available in the **dovi_tool editor** assets. You can find the examples here:
+     - [dovi_tool editor examples](https://github.com/quietvoid/dovi_tool/tree/main/assets/editor_examples)
 
-- **Check multiple frames**: If possible, verify the active area across different frames. If the offsets remain constant, then it’s safe to assume the active area is consistent across the entire video.
+   - **Edit the RPU**:  
+     Use the **dovi_tool editor** with a JSON config that defines the new active area values. For example, to adjust the crop for the first 40 frames, use the following JSON:
 
-- **Scene Data**: The scene/shot count (e.g., "Scene/shot count: 2577") can be useful to determine if any changes occur in the active area during different scenes or shots. If the active area is changing dynamically, it would be reflected in the scene data.
+     ```json
+     {
+       "mode": 2,
+       "active_area": {
+         "crop": true,
+         "presets": [
+           {
+             "id": 0,
+             "left": 0,
+             "right": 0,
+             "top": 276,
+             "bottom": 276
+           }
+         ],
+         "edits": {
+           "0-40": 0
+         }
+       }
+     }
+     ```
 
-- **Content Considerations**: For most standard content, the active area should be consistent. Dynamic cropping or changes in active area are uncommon unless specific content adjustments are made.
+     Command:
 
-By confirming the consistency of the active area across all frames, you ensure that the final remux will maintain the correct display of the content without any unintended cropping or stretching.
+     ```
+     dovi_tool editor -i RPU.bin -j active_area_fix.json -o RPU_fixed.bin
+     ```
 
+     If you want to apply the fix to all frames, use this JSON:
+
+     ```json
+     {
+       "mode": 0,
+       "active_area": {
+         "presets": [
+           {
+             "id": 0,
+             "left": 0,
+             "right": 0,
+             "top": 276,
+             "bottom": 276
+           }
+         ],
+         "edits": {
+           "all": 0
+         }
+       }
+     }
+     ```
+
+     Command:
+
+     ```
+     dovi_tool editor -i RPU.bin -j active_area_fix_all.json -o RPU_fixed.bin
+     ```
+
+4. **Inject the Updated RPU into the Merged File**:  
+   Since the **Base Layer (BL)** and **Enhanced Layer (EL)** were already **merged** into one file (i.e., `merged_dovi.hevc`), which extracted the **RPU** from it, you do **not need to mux the layers again**. Instead, you can directly inject the modified **RPU** into the merged file.
+
+   Use the following command to inject the modified **RPU** into the **merged** file:
+
+   ```
+   dovi_tool inject-rpu -i merged_dovi.hevc --rpu-in RPU_fixed.bin -o merged_with_RPU.hevc
+   ```
+
+   - **`merged_dovi.hevc`**: The already merged file that contains both the **Base Layer (BL)** and **Enhanced Layer (EL)**.
+   - **`RPU_fixed.bin`**: The updated **RPU** with the correct crop and other adjustments.
+   - **`merged_with_RPU.hevc`**: The final output file with the injected **RPU**.
+
+5. **Verify the Final Stream**:  
+   After injecting the **RPU**, use **dovi_tool info** to inspect the final stream and verify that the crop and other RPU details are correct:
+
+   ```
+   dovi_tool info -i merged_with_RPU.hevc
+   ```
 ---
 
 ## Conclusion
