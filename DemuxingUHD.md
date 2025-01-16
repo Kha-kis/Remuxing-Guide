@@ -29,6 +29,7 @@ DGDemux is optimized for UHD Blu-rays, especially those containing Dolby Vision.
 
    - Download dovi_tool from its [GitHub repository](https://github.com/quietvoid/dovi_tool).
    - Extract and ensure the executable is in your system path.
+   - Copy the updated dovi_tool executable into the DGDemux directory to replace the included version, ensuring compatibility with the latest features and fixes.
 
 ### Adding to System Path
 
